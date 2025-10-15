@@ -71,7 +71,6 @@
             font-size: 16px;
             font-family: inherit;
             resize: vertical;
-            min-height: 150px;
             transition: border-color 0.3s;
         }
         
@@ -95,36 +94,37 @@
             border-color: #667eea;
         }
         
+        .hint {
+            font-size: 14px;
+            color: #999;
+            margin-top: 5px;
+        }
+        
         .generate-btn {
-            width: 100%;
-            padding: 20px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            border-radius: 10px;
-            font-size: 20px;
+            padding: 18px 40px;
+            font-size: 18px;
             font-weight: bold;
+            border-radius: 10px;
             cursor: pointer;
+            width: 100%;
             transition: transform 0.2s, box-shadow 0.2s;
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
         }
         
         .generate-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
         }
         
         .generate-btn:active {
             transform: translateY(0);
         }
         
-        .generate-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-        
         .status-box {
-            background: #f8f9fa;
+            background: #f0f7ff;
             border-left: 4px solid #667eea;
             padding: 20px;
             border-radius: 10px;
@@ -134,11 +134,23 @@
         
         .status-box.show {
             display: block;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         
         .status-text {
-            color: #333;
             font-size: 16px;
+            color: #333;
         }
         
         .gallery {
@@ -148,23 +160,56 @@
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
         
-        .gallery h2 {
-            color: #333;
+        .gallery-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 30px;
-            font-size: 32px;
+            flex-wrap: wrap;
+            gap: 15px;
         }
         
-        .images-grid {
+        .gallery-title {
+            font-size: 32px;
+            color: #333;
+        }
+        
+        .gallery-stats {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .stat {
+            background: #f5f5f5;
+            padding: 10px 20px;
+            border-radius: 10px;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #999;
+            text-transform: uppercase;
+        }
+        
+        .stat-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
+            gap: 25px;
         }
         
         .image-card {
-            border-radius: 10px;
+            background: #f9f9f9;
+            border-radius: 15px;
             overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            transition: transform 0.3s;
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
         }
         
         .image-card:hover {
@@ -174,63 +219,144 @@
         
         .image-card img {
             width: 100%;
-            height: auto;
+            height: 300px;
+            object-fit: cover;
             display: block;
         }
         
         .image-info {
             padding: 15px;
-            background: #f8f9fa;
         }
         
         .image-prompt {
-            color: #666;
             font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
         
-        .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #667eea;
-            border-radius: 50%;
+        .image-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .action-btn {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.2s;
+        }
+        
+        .view-btn {
+            background: #667eea;
+            color: white;
+        }
+        
+        .view-btn:hover {
+            background: #5568d3;
+        }
+        
+        .download-btn {
+            background: #10b981;
+            color: white;
+        }
+        
+        .download-btn:hover {
+            background: #059669;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+        
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+        
+        .empty-text {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .empty-hint {
+            font-size: 16px;
+        }
+        
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .lightbox.show {
+            display: flex;
+        }
+        
+        .lightbox-content {
+            position: relative;
+            max-width: 90%;
+            max-height: 90%;
+        }
+        
+        .lightbox-image {
+            max-width: 100%;
+            max-height: 90vh;
+            border-radius: 10px;
+        }
+        
+        .lightbox-close {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            background: white;
+            border: none;
             width: 40px;
             height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
-            display: none;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            transition: transform 0.2s;
         }
         
-        .spinner.show {
-            display: block;
+        .lightbox-close:hover {
+            transform: scale(1.1);
         }
         
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .how-to {
-            background: white;
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            margin-top: 30px;
-        }
-        
-        .how-to h3 {
+        .loading {
+            text-align: center;
+            padding: 20px;
             color: #667eea;
-            margin-bottom: 15px;
-        }
-        
-        .how-to ol {
-            margin-left: 20px;
-            color: #666;
-            line-height: 1.8;
+            font-size: 18px;
         }
         
         @media (max-width: 768px) {
-            h1 { font-size: 32px; }
-            .generator-box, .gallery, .header { padding: 20px; }
-            .images-grid { grid-template-columns: 1fr; }
+            h1 {
+                font-size: 32px;
+            }
+            
+            .gallery-title {
+                font-size: 24px;
+            }
+            
+            .grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
         }
     </style>
 </head>
@@ -238,149 +364,271 @@
     <div class="container">
         <div class="header">
             <h1>🎨 AI Image Generator</h1>
-            <p class="subtitle">Powered by SDXL Lightning + GitHub Actions + Kaggle GPU</p>
+            <p class="subtitle">Powered by Stable Diffusion XL & GitHub Actions</p>
         </div>
-        
-        <div class="generator-box">
-            <h2 style="margin-bottom: 20px; color: #333;">✨ Generate Your Images</h2>
-            
-            <div class="form-group">
-                <label>📝 Your Prompts (one per line):</label>
-                <textarea id="prompts" placeholder="a futuristic cyberpunk city at night
-a peaceful zen garden with cherry blossoms
-a racing car on a mountain road
-a cute red panda eating bamboo
-a tropical beach at sunset
 
-Add as many prompts as you want!"></textarea>
-            </div>
-            
+        <div class="generator-box">
             <div class="form-group">
-                <label>🎨 Style (optional):</label>
-                <input type="text" id="style" placeholder="highly detailed, 8k, professional photography" value="highly detailed, 8k, professional photography">
+                <label for="prompts">✨ Enter Your Image Prompts</label>
+                <textarea 
+                    id="prompts" 
+                    rows="8" 
+                    placeholder="a beautiful sunset over mountains&#10;a cute cat wearing sunglasses&#10;a futuristic city at night&#10;&#10;(One prompt per line)"
+                ></textarea>
+                <p class="hint">Enter one prompt per line. Be descriptive for best results!</p>
             </div>
-            
+
+            <div class="form-group">
+                <label for="style">🎭 Optional Style (Applied to All)</label>
+                <input 
+                    type="text" 
+                    id="style" 
+                    placeholder="e.g., digital art, photorealistic, watercolor, anime style"
+                >
+                <p class="hint">This style will be added to all your prompts automatically</p>
+            </div>
+
             <button class="generate-btn" onclick="generateImages()">
                 🚀 GENERATE IMAGES
             </button>
-            
-            <div class="status-box" id="statusBox">
-                <div class="spinner" id="spinner"></div>
-                <p class="status-text" id="statusText"></p>
+
+            <div id="statusBox" class="status-box">
+                <div id="statusText" class="status-text"></div>
             </div>
         </div>
-        
+
         <div class="gallery">
-            <h2>🖼️ Your Generated Images</h2>
-            <div class="images-grid" id="gallery">
-                <p style="color: #999; text-align: center; grid-column: 1/-1;">
-                    Your images will appear here after generation completes!
-                </p>
+            <div class="gallery-header">
+                <h2 class="gallery-title">📸 Generated Images</h2>
+                <div class="gallery-stats">
+                    <div class="stat">
+                        <div class="stat-label">Total Images</div>
+                        <div class="stat-value" id="totalImages">0</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">Last Updated</div>
+                        <div class="stat-value" id="lastUpdated">Never</div>
+                    </div>
+                </div>
             </div>
-        </div>
-        
-        <div class="how-to">
-            <h3>📖 How It Works</h3>
-            <ol>
-                <li><strong>Enter your prompts</strong> - Describe what images you want (one per line)</li>
-                <li><strong>Click "Generate"</strong> - This triggers GitHub Actions + Kaggle GPU</li>
-                <li><strong>Wait 5-10 minutes</strong> - AI is generating your images on free GPU</li>
-                <li><strong>Images appear automatically</strong> - Refresh the page to see them</li>
-                <li><strong>Download</strong> - Right-click any image to save it</li>
-            </ol>
+
+            <div id="loadingMessage" class="loading" style="display: none;">
+                🔄 Loading images...
+            </div>
+
+            <div id="galleryGrid" class="grid"></div>
+
+            <div id="emptyState" class="empty-state">
+                <div class="empty-icon">🖼️</div>
+                <div class="empty-text">No images yet</div>
+                <div class="empty-hint">Generate your first batch of images above!</div>
+            </div>
         </div>
     </div>
-    
+
+    <div id="lightbox" class="lightbox" onclick="closeLightbox()">
+        <div class="lightbox-content" onclick="event.stopPropagation()">
+            <button class="lightbox-close" onclick="closeLightbox()">×</button>
+            <img id="lightboxImage" class="lightbox-image" src="" alt="">
+        </div>
+    </div>
+
     <script>
         const REPO_OWNER = 'Vahjnjii';
         const REPO_NAME = 'kaggle-auto-generator';
-        
+        const TOKEN = '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';
+
+        // Load images on page load
+        window.addEventListener('load', () => {
+            loadImages();
+            // Auto-refresh every 30 seconds
+            setInterval(loadImages, 30000);
+        });
+
         async function generateImages() {
             const prompts = document.getElementById('prompts').value.trim();
             const style = document.getElementById('style').value.trim();
-            const statusBox = document.getElementById('statusBox');
-            const statusText = document.getElementById('statusText');
-            const spinner = document.getElementById('spinner');
-            const btn = document.querySelector('.generate-btn');
-            
+
             if (!prompts) {
-                alert('Please enter at least one prompt!');
+                alert('❌ Please enter at least one prompt!');
                 return;
             }
-            
+
+            // Process prompts with style
+            let finalPrompts = prompts;
+            if (style) {
+                const promptLines = prompts.split('\n').filter(p => p.trim());
+                finalPrompts = promptLines.map(p => `${p.trim()}, ${style}`).join('\n');
+            }
+
             // Show status
-            statusBox.classList.add('show');
-            spinner.classList.add('show');
-            btn.disabled = true;
-            statusText.textContent = '📤 Sending your prompts to GitHub Actions...';
-            
+            document.getElementById('statusBox').classList.add('show');
+            document.getElementById('statusText').textContent = '⏳ Updating prompts and triggering generation...';
+
             try {
-                // Update prompts.txt via GitHub API
-                const response = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/prompts.txt`, {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': 'Bearer YOUR_GITHUB_TOKEN_HERE',
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        message: 'Update prompts from web interface',
-                        content: btoa(prompts),
-                        sha: await getFileSHA()
-                    })
-                });
-                
-                if (response.ok) {
-                    statusText.textContent = '✅ Prompts uploaded! Generation started...';
-                    setTimeout(() => {
-                        statusText.textContent = '⏳ Generating images... This takes 5-10 minutes. Refresh the page later to see your images!';
-                        spinner.classList.remove('show');
-                        btn.disabled = false;
-                    }, 2000);
-                    
-                    // Poll for new images every 30 seconds
-                    pollForNewImages();
-                } else {
-                    throw new Error('Failed to upload prompts');
-                }
-                
+                // Update prompts.txt
+                await updatePromptsFile(finalPrompts);
+
+                // Success message
+                document.getElementById('statusText').innerHTML = `
+                    ✅ <strong>Generation Started!</strong><br>
+                    ⏱️ Your images will be ready in 6-10 minutes<br>
+                    🔄 This page will auto-refresh, or you can refresh manually
+                `;
+
+                // Clear the form
+                document.getElementById('prompts').value = '';
+                document.getElementById('style').value = '';
+
             } catch (error) {
-                statusText.textContent = '❌ Error: Please use GitHub Actions manually or update prompts.txt directly';
-                spinner.classList.remove('show');
-                btn.disabled = false;
+                document.getElementById('statusText').innerHTML = `
+                    ❌ <strong>Error:</strong> ${error.message}<br>
+                    Please try again or check the console for details.
+                `;
+                console.error('Error:', error);
             }
         }
-        
-        async function getFileSHA() {
-            const response = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/prompts.txt`);
-            const data = await response.json();
-            return data.sha;
+
+        async function updatePromptsFile(content) {
+            const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/prompts.txt`;
+
+            // Get current file to get its SHA
+            const getResponse = await fetch(url, {
+                headers: {
+                    'Authorization': `token ${TOKEN}`,
+                    'Accept': 'application/vnd.github.v3+json'
+                }
+            });
+
+            if (!getResponse.ok) {
+                throw new Error('Failed to fetch current prompts.txt');
+            }
+
+            const fileData = await getResponse.json();
+
+            // Update the file
+            const updateResponse = await fetch(url, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `token ${TOKEN}`,
+                    'Accept': 'application/vnd.github.v3+json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    message: 'Update prompts via web interface',
+                    content: btoa(unescape(encodeURIComponent(content))),
+                    sha: fileData.sha
+                })
+            });
+
+            if (!updateResponse.ok) {
+                const errorData = await updateResponse.json();
+                throw new Error(errorData.message || 'Failed to update prompts.txt');
+            }
         }
-        
+
         async function loadImages() {
-            const gallery = document.getElementById('gallery');
-            
+            const galleryGrid = document.getElementById('galleryGrid');
+            const emptyState = document.getElementById('emptyState');
+            const loadingMessage = document.getElementById('loadingMessage');
+
+            loadingMessage.style.display = 'block';
+            emptyState.style.display = 'none';
+
             try {
-                // Fetch latest workflow runs
-                const response = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/actions/artifacts`);
-                const data = await response.json();
-                
-                if (data.artifacts && data.artifacts.length > 0) {
-                    gallery.innerHTML = '<p style="color: #667eea; text-align: center; grid-column: 1/-1;">✨ Latest generations available! Click "Download ZIP" in GitHub Actions to get them.</p>';
-                    
-                    // Note: Can't directly display artifacts without authentication
-                    // But we can show that they exist
+                const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/outputs`;
+                const response = await fetch(url);
+
+                if (!response.ok) {
+                    throw new Error('No outputs folder yet');
                 }
+
+                const files = await response.json();
+                const imageFiles = files.filter(file => 
+                    file.name.endsWith('.png') || 
+                    file.name.endsWith('.jpg') || 
+                    file.name.endsWith('.jpeg')
+                );
+
+                loadingMessage.style.display = 'none';
+
+                if (imageFiles.length === 0) {
+                    emptyState.style.display = 'block';
+                    galleryGrid.innerHTML = '';
+                    document.getElementById('totalImages').textContent = '0';
+                    return;
+                }
+
+                // Update stats
+                document.getElementById('totalImages').textContent = imageFiles.length;
+                document.getElementById('lastUpdated').textContent = new Date().toLocaleTimeString();
+
+                // Hide empty state
+                emptyState.style.display = 'none';
+
+                // Create image cards
+                galleryGrid.innerHTML = imageFiles.map(file => {
+                    const promptName = file.name.replace(/\.(png|jpg|jpeg)$/i, '').replace(/_/g, ' ');
+                    return `
+                        <div class="image-card">
+                            <img src="${file.download_url}" alt="${promptName}" loading="lazy">
+                            <div class="image-info">
+                                <div class="image-prompt" title="${promptName}">${promptName}</div>
+                                <div class="image-actions">
+                                    <button class="action-btn view-btn" onclick="openLightbox('${file.download_url}')">
+                                        👁️ View
+                                    </button>
+                                    <button class="action-btn download-btn" onclick="downloadImage('${file.download_url}', '${file.name}')">
+                                        ⬇️ Download
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
             } catch (error) {
-                console.log('Could not load images:', error);
+                loadingMessage.style.display = 'none';
+                emptyState.style.display = 'block';
+                galleryGrid.innerHTML = '';
+                console.error('Error loading images:', error);
             }
         }
-        
-        function pollForNewImages() {
-            setInterval(loadImages, 30000); // Check every 30 seconds
+
+        function openLightbox(imageUrl) {
+            document.getElementById('lightboxImage').src = imageUrl;
+            document.getElementById('lightbox').classList.add('show');
         }
-        
-        // Load images on page load
-        window.addEventListener('load', loadImages);
+
+        function closeLightbox() {
+            document.getElementById('lightbox').classList.remove('show');
+        }
+
+        async function downloadImage(url, filename) {
+            try {
+                const response = await fetch(url);
+                const blob = await response.blob();
+                const blobUrl = window.URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = blobUrl;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(blobUrl);
+            } catch (error) {
+                console.error('Download error:', error);
+                alert('Failed to download image. You can right-click and "Save image as..." instead.');
+            }
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeLightbox();
+            }
+        });
     </script>
 </body>
 </html>
