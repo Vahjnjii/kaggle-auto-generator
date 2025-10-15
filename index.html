@@ -337,7 +337,6 @@ a futuristic city"></textarea>
     <script>
         const REPO_OWNER = 'Vahjnjii';
         const REPO_NAME = 'kaggle-auto-generator';
-        const BRANCH = 'main';
         const ACCESS_TOKEN = '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';
 
         window.onload = () => {
@@ -359,7 +358,7 @@ a futuristic city"></textarea>
             btn.disabled = true;
             btn.textContent = 'Processing...';
             status.className = 'status show';
-            status.textContent = 'Uploading prompts...';
+            status.textContent = 'Uploading prompts to GitHub...';
 
             let finalPrompts = prompts;
             if (style) {
@@ -370,7 +369,7 @@ a futuristic city"></textarea>
             try {
                 const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/prompts.txt`;
                 
-                // Get current file
+                // Get current file SHA
                 const getRes = await fetch(url, {
                     headers: { 
                         'Authorization': `token ${ACCESS_TOKEN}`,
@@ -379,10 +378,10 @@ a futuristic city"></textarea>
                 });
                 
                 if (!getRes.ok) {
-                    throw new Error('Cannot find prompts.txt. Make sure it exists in your repository.');
+                    throw new Error(`Failed to fetch file (${getRes.status})`);
                 }
                 
-                const data = await getRes.json();
+                const fileData = await getRes.json();
                 
                 // Update file
                 const updateRes = await fetch(url, {
@@ -395,17 +394,17 @@ a futuristic city"></textarea>
                     body: JSON.stringify({
                         message: 'Update prompts via web interface',
                         content: btoa(unescape(encodeURIComponent(finalPrompts))),
-                        sha: data.sha
+                        sha: fileData.sha
                     })
                 });
 
                 if (!updateRes.ok) {
                     const errorData = await updateRes.json();
-                    throw new Error(errorData.message || 'Failed to update prompts.txt');
+                    throw new Error(errorData.message || `Update failed (${updateRes.status})`);
                 }
 
                 status.className = 'status show success';
-                status.textContent = '✓ Success! Images will be ready in 6-10 minutes. Page will auto-refresh.';
+                status.textContent = '✓ Success! Prompts uploaded.\nImages will be ready in 6-10 minutes.\nThis page will auto-refresh every 30 seconds.';
                 
                 document.getElementById('prompts').value = '';
                 document.getElementById('style').value = '';
