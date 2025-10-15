@@ -1,0 +1,166 @@
+name: Generate Images
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - prompts.txt
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code
+        uses: actions/checkout@v3
+      
+      - name: Run Kaggle
+        uses: KevKibe/kaggle-script-action@v1.0.5
+        with:
+          username: ${{ secrets.KAGGLE_USERNAME }}
+          key: ${{ secrets.KAGGLE_KEY }}
+          title: Image Generator
+          code_file: notebook.py
+          language: python
+          kernel_type: script
+          is_private: true
+          enable_gpu: true
+          enable_internet: true
+```
+
+4. **Paste it** into the big text editor area
+
+5. Scroll down and click **"Commit new file"**
+
+✅ **Clean file created!**
+
+---
+
+## 🎯 STEP 3: Test It! (1 minute)
+
+1. Click **"Actions"** tab at the top
+
+2. In the left sidebar, click **"Generate Images"**
+
+3. On the right side, click **"Run workflow"** (gray button)
+
+4. Click the green **"Run workflow"** button
+
+5. **Refresh your page** (F5 or click refresh)
+
+6. You should see a **yellow dot 🟡** appear!
+
+---
+
+## ⏳ STEP 4: Watch It Run (3-5 minutes)
+
+1. **Click on the yellow 🟡 line** that just appeared
+
+2. Click **"generate"** in the Jobs section
+
+3. Watch the logs appear:
+```
+   Run actions/checkout@v3
+   ✓ Complete
+   
+   Run KevKibe/kaggle-script-action@v1.0.5
+   Pushing to Kaggle...
+   Kernel created successfully
+   Waiting for kernel execution...
+```
+
+4. **Wait 3-5 minutes** for it to complete
+
+5. When done, you'll see **green checkmarks ✅**
+
+---
+
+## 🎉 STEP 5: Get Your Images! (2 minutes)
+
+1. **Open new tab**: https://www.kaggle.com/code
+
+2. **Sign in** if needed
+
+3. You'll see a notebook called **"Image Generator"**
+
+4. **Click on it**
+
+5. If it's still running, wait for it to finish
+
+6. Click **"Output"** tab (on the right side)
+
+7. **Download the ZIP file**
+
+8. **Extract it** on your computer
+
+9. **DONE!** You have your 3 images! 🎉
+
+---
+
+## 🎯 VERIFY SUCCESS
+
+You know it worked if you see:
+
+**In GitHub:**
+- ✅ Green checkmark in Actions tab
+- ✅ "Generate Images" workflow succeeded
+
+**In Kaggle:**
+- ✅ "Image Generator" notebook exists
+- ✅ ZIP file in Output tab
+- ✅ 3 images inside the ZIP
+
+---
+
+## 🚀 HOW TO USE IT FROM NOW ON
+
+### **Method 1: Edit prompts.txt (Automatic Trigger)**
+
+1. Go to your GitHub repository
+2. Click `prompts.txt`
+3. Click ✏️ pencil icon
+4. Change prompts to whatever you want:
+```
+   a cyberpunk city at night
+   a peaceful zen garden
+   a racing car on mountain road
+   a cute red panda eating bamboo
+   a tropical beach at sunset
+```
+5. Click "Commit changes"
+6. **AUTOMATIC!** GitHub Actions starts
+7. Wait 5 minutes
+8. Download from Kaggle
+
+---
+
+### **Method 2: Manual Trigger (Same Prompts)**
+
+1. Actions tab
+2. "Generate Images"
+3. "Run workflow"
+4. Wait 5 minutes
+5. Download from Kaggle
+
+---
+
+## 💡 What Happens Behind the Scenes
+```
+1. YOU edit prompts.txt on GitHub
+   ↓
+2. GitHub notices the change
+   ↓
+3. GitHub Actions robot wakes up
+   ↓
+4. Robot runs: "Send notebook.py to Kaggle!"
+   ↓
+5. Kaggle receives it and starts GPU
+   ↓
+6. GPU loads SDXL model
+   ↓
+7. GPU generates each image
+   ↓
+8. GPU creates ZIP file
+   ↓
+9. YOU download ZIP from Kaggle
+   ↓
+10. DONE! ✅
