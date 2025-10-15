@@ -2,12 +2,140 @@ name: Generate
 
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - prompts.txt
 
 jobs:
   generate:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      
+      - name: Inject prompts into notebook
+        run: |
+          echo "📝 Reading prompts from prompts.txt..."
+          PROMPTS=$(cat prompts.txt)
+          echo "📝 Injecting prompts into notebook.py..."
+          
+          # Create a new notebook with prompts embedded
+          cat > notebook_with_prompts.py << 'ENDOFFILE'
+          # ============================================
+          # KAGGLE AUTO-GENERATOR WITH EMBEDDED PROMPTS
+          # ============================================
+          
+          import subprocess
+          import sys
+          
+          # Install packages
+          print("Installing dependencies...")
+          subprocess.check_call([sys.executable, "-m", "pip", "install", 
+                                "diffusers", "transformers", "accelerate", "peft", "-q"])
+          
+          import torch
+          import random
+          import gc
+          import os
+          import zipfile
+          from datetime import datetime
+          from diffusers import StableDiffusionXLPipeline, EulerDiscreteScheduler
+          
+          print("=" * 70)
+          print("⚡ GITHUB ACTIONS AUTO-GENERATOR")
+          print("=" * 70)
+          
+          # EMBEDDED PROMPTS (injected by GitHub Actions)
+          PROMPTS_TEXT = """PROMPTS_PLACEHOLDER"""
+          
+          # Settings
+          SUB_PROMPT = "highly detailed, 8k, professional photography"
+          NEGATIVE_PROMPT = "blurry, low quality, distorted, ugly"
+          WIDTH, HEIGHT = 1024, 1024
+          
+          prompts = [p.strip() for p in PROMPTS_TEXT.split('\n') if p.strip()]
+          print(f"📊 Generating {len(prompts)} images...")
+          
+          # Setup
+          os.environ['PYTORCH_CUDA_ALLOC_CONF'] = 'expandable_segments:True'
+          
+          def clear_mem():
+              gc.collect()
+              torch.cuda.empty_cache()
+              torch.cuda.ipc_collect()
+          
+          # Load model
+          print("\n🔄 Loading SDXL Lightning...")
+          pipe = StableDiffusionXLPipeline.from_pretrained(
+              "stabilityai/stable-diffusion-xl-base-1.0",
+              torch_dtype=torch.float16,
+              variant="fp16",
+              use_safetensors=True
+          ).to("cuda")
+          
+          pipe.load_lora_weights("ByteDance/SDXL-Lightning", 
+                                 weight_name="sdxl_lightning_8step_lora.safetensors")
+          
+          pipe.scheduler = EulerDiscreteScheduler.from_config(
+              pipe.scheduler.config, timestep_spacing="trailing")
+          pipe.enable_attention_slicing(1)
+          pipe.enable_vae_slicing()
+          pipe.enable_model_cpu_offload()
+          
+          print("✅ Model loaded!\n")
+          
+          # Generate
+          ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+          out_dir = f"/kaggle/working/images_{ts}"
+          os.makedirs(out_dir)
+          
+          paths = []
+          for i, prompt in enumerate(prompts, 1):
+              try:
+                  clear_mem()
+                  full_prompt = f"{prompt}, {SUB_PROMPT}" if SUB_PROMPT else prompt
+                  seed = random.randint(0, 2**32-1)
+                  
+                  print(f"[{i}/{len(prompts)}] {prompt[:50]}...")
+                  
+                  img = pipe(
+                      prompt=full_prompt,
+                      negative_prompt=NEGATIVE_PROMPT,
+                      num_inference_steps=8,
+                      guidance_scale=1.0,
+                      width=WIDTH,
+                      height=HEIGHT,
+                      generator=torch.manual_seed(seed)
+                  ).images[0]
+                  
+                  filename = f"img_{i:04d}_{seed}.png"
+                  filepath = os.path.join(out_dir, filename)
+                  img.save(filepath)
+                  paths.append(filepath)
+                  print(f"✅ {filename}")
+                  
+                  clear_mem()
+              except Exception as e:
+                  print(f"❌ Error: {e}")
+          
+          # Create ZIP
+          zip_file = f"/kaggle/working/images_{ts}.zip"
+          with zipfile.ZipFile(zip_file, 'w', zipfile.ZIP_DEFLATED) as z:
+              for p in paths:
+                  z.write(p, os.path.basename(p))
+          
+          print(f"\n{'='*70}")
+          print(f"✅ Complete! {len(paths)}/{len(prompts)} images")
+          print(f"📦 ZIP: {zip_file}")
+          print(f"{'='*70}")
+          ENDOFFILE
+          
+          # Replace placeholder with actual prompts
+          sed -i "s|PROMPTS_PLACEHOLDER|$PROMPTS|g" notebook_with_prompts.py
+          
+          # Use this as the notebook to push
+          mv notebook_with_prompts.py notebook.py
+          
+          echo "✅ Prompts injected successfully!"
       
       - name: Setup Kaggle
         run: |
@@ -33,3 +161,88 @@ jobs:
           }
           EOF
           kaggle kernels push
+      
+      - name: Wait for Kaggle
+        run: |
+          echo "⏳ Waiting for Kaggle to complete..."
+          for i in {1..60}; do
+            STATUS=$(kaggle kernels status shreevathsbbhh/image-generator 2>&1 || echo "running")
+            echo "Check $i/60: $STATUS"
+            if echo "$STATUS" | grep -qi "complete"; then
+              echo "✅ Kaggle completed!"
+              break
+            fi
+            sleep 30
+          done
+      
+      - name: Download from Kaggle
+        run: |
+          echo "📥 Downloading images..."
+          mkdir -p generated_images
+          kaggle kernels output shreevathsbbhh/image-generator -p generated_images || echo "Download failed, continuing..."
+          ls -lh generated_images/ || echo "No files found"
+      
+      - name: Upload to GitHub
+        uses: actions/upload-artifact@v3
+        with:
+          name: generated-images
+          path: generated_images/*.zip
+          retention-days: 30
+```
+
+6. Click **"Commit changes"**
+
+---
+
+## 🚀 STEP 2: Test It!
+
+1. Go to **Actions** tab
+2. Click **"Generate"**
+3. Click **"Run workflow"**
+4. Click green **"Run workflow"**
+5. Wait 5-10 minutes
+
+---
+
+## 🎯 What This Fix Does
+
+**Before:**
+```
+GitHub pushes notebook.py (only this file)
+Kaggle looks for prompts.txt (doesn't exist!)
+❌ Error
+```
+
+**After:**
+```
+GitHub reads prompts.txt
+GitHub injects prompts INTO notebook.py
+GitHub pushes modified notebook.py (with prompts inside!)
+Kaggle runs notebook with embedded prompts
+✅ Works!
+```
+
+---
+
+## 📝 How It Works Now
+
+1. **GitHub reads** `prompts.txt`
+2. **GitHub embeds** prompts into the Python code
+3. **GitHub pushes** the modified code to Kaggle
+4. **Kaggle runs** with prompts already inside
+5. **GitHub downloads** the results
+6. **You download** from GitHub Artifacts
+
+---
+
+## 🎨 To Change Prompts (Simple!)
+
+**Just edit prompts.txt on GitHub:**
+
+1. Click `prompts.txt`
+2. Click ✏️ Edit
+3. Change prompts:
+```
+   a cyberpunk city
+   a zen garden
+   a sports car
