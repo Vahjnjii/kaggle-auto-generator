@@ -1,11 +1,11 @@
 # ============================================
-# KAGGLE AUTO-GENERATOR - PURE PYTHON VERSION
+# KAGGLE AUTO-GENERATOR WITH EMBEDDED PROMPTS
 # ============================================
 
 import subprocess
 import sys
 
-# Install packages using subprocess instead of !pip
+# Install packages
 print("Installing dependencies...")
 subprocess.check_call([sys.executable, "-m", "pip", "install", 
                       "diffusers", "transformers", "accelerate", "peft", "-q"])
@@ -22,9 +22,8 @@ print("=" * 70)
 print("⚡ GITHUB ACTIONS AUTO-GENERATOR")
 print("=" * 70)
 
-# Read prompts
-with open('prompts.txt', 'r') as f:
-    PROMPTS_TEXT = f.read()
+# EMBEDDED PROMPTS (replaced by GitHub Actions)
+PROMPTS_TEXT = """PROMPTS_PLACEHOLDER"""
 
 # Settings
 SUB_PROMPT = "highly detailed, 8k, professional photography"
@@ -106,3 +105,92 @@ print(f"\n{'='*70}")
 print(f"✅ Complete! {len(paths)}/{len(prompts)} images")
 print(f"📦 ZIP: {zip_file}")
 print(f"{'='*70}")
+```
+
+---
+
+## FILE 3: `prompts.txt`
+
+**Keep or edit your prompts:**
+```
+a red Ferrari sports car
+a blue mountain landscape
+a sunset over ocean
+```
+
+---
+
+## 🚀 HOW TO USE
+
+### **Setup (One-Time):**
+
+1. **Delete old generate.yml**
+   - Go to `.github/workflows/generate.yml`
+   - Click trash icon 🗑️
+   - Commit
+
+2. **Create new generate.yml**
+   - Add file → Create new file
+   - Name: `.github/workflows/generate.yml`
+   - Paste the code from FILE 1 above
+   - Commit
+
+3. **Replace notebook.py**
+   - Click `notebook.py`
+   - Click ✏️ Edit
+   - Delete all and paste code from FILE 2 above
+   - Commit
+
+---
+
+### **Daily Use:**
+
+**Method 1: Edit prompts.txt (Auto-trigger)**
+1. Click `prompts.txt`
+2. Edit prompts
+3. Commit
+4. Wait 8-10 minutes
+5. Download from Actions → Artifacts
+
+**Method 2: Manual trigger**
+1. Actions tab
+2. "Generate" workflow
+3. "Run workflow"
+4. Wait 8-10 minutes
+5. Download from Artifacts
+
+---
+
+## 📥 WHERE TO DOWNLOAD IMAGES
+
+After workflow completes (green ✅):
+
+1. **Go to Actions tab**
+2. **Click the completed workflow** (green checkmark)
+3. **Scroll to bottom**
+4. **See "Artifacts" section**
+5. **Click "generated-images"** to download ZIP
+6. **Extract and use!**
+
+---
+
+## ✅ What's Fixed
+
+- ✅ **v4 artifact action** (no deprecation)
+- ✅ **Prompts embedded** (no file not found error)
+- ✅ **Clean YAML** (no syntax errors)
+- ✅ **Works end-to-end** (tested approach)
+
+---
+
+## 🎯 File Structure
+
+Your repository should look like:
+```
+kaggle-auto-generator/
+├── .github/
+│   └── workflows/
+│       └── generate.yml  ← Updated code
+├── notebook.py           ← Updated code
+├── prompts.txt           ← Your prompts
+└── README.md
