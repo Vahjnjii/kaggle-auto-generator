@@ -110,6 +110,7 @@
             border-radius: 4px;
             display: none;
             white-space: pre-wrap;
+            font-size: 13px;
         }
         
         .status.show {
@@ -336,7 +337,8 @@ a futuristic city"></textarea>
     <script>
         const REPO_OWNER = 'Vahjnjii';
         const REPO_NAME = 'kaggle-auto-generator';
-        const ACCESS_TOKEN = 'PASTE_YOUR_NEW_TOKEN_HERE'; // ← REPLACE THIS
+        const BRANCH = 'main';
+        const ACCESS_TOKEN = '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';
 
         window.onload = () => {
             loadImages();
@@ -467,7 +469,6 @@ a futuristic city"></textarea>
                 loading.style.display = 'none';
                 empty.style.display = 'block';
                 grid.innerHTML = '';
-                console.error('Error loading images:', error);
             }
         }
 
