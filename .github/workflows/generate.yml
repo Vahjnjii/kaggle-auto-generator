@@ -1,74 +1,21 @@
-name: Auto Generate Images
+name: Generate
 
 on:
-  push:
-    paths:
-      - 'prompts.txt'
   workflow_dispatch:
 
 jobs:
-  generate:
+  run:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-      
-      - name: Run on Kaggle
-        uses: KevKibe/kaggle-script-action@v1.0.5
+      - uses: actions/checkout@v3
+      - uses: KevKibe/kaggle-script-action@v1.0.5
         with:
           username: ${{ secrets.KAGGLE_USERNAME }}
           key: ${{ secrets.KAGGLE_KEY }}
-          title: Auto Image Generator
+          title: Generator
           code_file: notebook.py
           language: python
           kernel_type: script
           is_private: true
           enable_gpu: true
           enable_internet: true
-          sleep_time: 60
-      
-      - name: Complete
-        run: echo "Done - Download from Kaggle"
-```
-
----
-
-### **Step 3: Save**
-
-1. Scroll down
-2. Click **"Commit changes"**
-3. Click **"Commit changes"** again (in the popup)
-
----
-
-### **Step 4: Run It!**
-
-1. Go to **Actions** tab
-2. Click **"Auto Generate Images"** (left sidebar)
-3. Click **"Run workflow"** (right side dropdown)
-4. Click green **"Run workflow"** button
-5. Refresh page
-
-✅ **Should work now!**
-
----
-
-## 🎯 What I Fixed
-
-**The problem:** Line 29 had special characters (emoji, fancy quotes) that YAML didn't like
-
-**The fix:** 
-- Removed emojis from the echo command
-- Removed quotes from some parameters (they were causing issues)
-- Added proper `name:` fields to each step
-- Clean, simple YAML syntax
-
----
-
-## 📊 Expected Result
-
-After fixing and running, you should see:
-```
-✅ Checkout code       (green checkmark)
-✅ Run on Kaggle       (green checkmark)
-✅ Complete            (green checkmark)
