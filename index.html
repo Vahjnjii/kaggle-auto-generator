@@ -336,7 +336,7 @@ a futuristic city"></textarea>
     <script>
         const REPO_OWNER = 'Vahjnjii';
         const REPO_NAME = 'kaggle-auto-generator';
-        const TOKEN = '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';
+        const ACCESS_TOKEN = 'PASTE_YOUR_NEW_TOKEN_HERE'; // ← REPLACE THIS
 
         window.onload = () => {
             loadImages();
@@ -369,31 +369,24 @@ a futuristic city"></textarea>
                 const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/prompts.txt`;
                 
                 // Get current file
-                console.log('Fetching prompts.txt...');
                 const getRes = await fetch(url, {
                     headers: { 
-                        'Authorization': `token ${TOKEN}`,
+                        'Authorization': `token ${ACCESS_TOKEN}`,
                         'Accept': 'application/vnd.github.v3+json'
                     }
                 });
                 
-                console.log('GET Response status:', getRes.status);
-                
                 if (!getRes.ok) {
-                    const errorText = await getRes.text();
-                    console.error('GET Error:', errorText);
-                    throw new Error(`Cannot find prompts.txt (Status: ${getRes.status})\n\nMake sure:\n1. prompts.txt exists in your repo\n2. File is in the main/root folder\n3. Repository is public or token has access`);
+                    throw new Error('Cannot find prompts.txt. Make sure it exists in your repository.');
                 }
                 
                 const data = await getRes.json();
-                console.log('Current SHA:', data.sha);
                 
                 // Update file
-                console.log('Updating prompts.txt...');
                 const updateRes = await fetch(url, {
                     method: 'PUT',
                     headers: {
-                        'Authorization': `token ${TOKEN}`,
+                        'Authorization': `token ${ACCESS_TOKEN}`,
                         'Accept': 'application/vnd.github.v3+json',
                         'Content-Type': 'application/json'
                     },
@@ -404,12 +397,9 @@ a futuristic city"></textarea>
                     })
                 });
 
-                console.log('PUT Response status:', updateRes.status);
-
                 if (!updateRes.ok) {
-                    const errorText = await updateRes.text();
-                    console.error('PUT Error:', errorText);
-                    throw new Error(`Failed to update prompts.txt (Status: ${updateRes.status})`);
+                    const errorData = await updateRes.json();
+                    throw new Error(errorData.message || 'Failed to update prompts.txt');
                 }
 
                 status.className = 'status show success';
@@ -419,7 +409,7 @@ a futuristic city"></textarea>
                 document.getElementById('style').value = '';
 
             } catch (error) {
-                console.error('Full error:', error);
+                console.error('Error:', error);
                 status.className = 'status show error';
                 status.textContent = '✗ Error: ' + error.message;
             } finally {
@@ -477,6 +467,7 @@ a futuristic city"></textarea>
                 loading.style.display = 'none';
                 empty.style.display = 'block';
                 grid.innerHTML = '';
+                console.error('Error loading images:', error);
             }
         }
 
