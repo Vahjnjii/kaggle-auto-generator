@@ -10,61 +10,65 @@ jobs:
   generate:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
       
-      - uses: KevKibe/kaggle-script-action@v1.0.5
+      - name: Run on Kaggle
+        uses: KevKibe/kaggle-script-action@v1.0.5
         with:
           username: ${{ secrets.KAGGLE_USERNAME }}
           key: ${{ secrets.KAGGLE_KEY }}
-          title: "Auto Image Generator"
-          code_file: "notebook.py"
-          language: "python"
-          kernel_type: "script"
-          is_private: "true"
-          enable_gpu: "true"
-          enable_internet: "true"
+          title: Auto Image Generator
+          code_file: notebook.py
+          language: python
+          kernel_type: script
+          is_private: true
+          enable_gpu: true
+          enable_internet: true
           sleep_time: 60
       
-      - run: echo "✅ Done! Download from Kaggle"
+      - name: Complete
+        run: echo "Done - Download from Kaggle"
 ```
 
-4. Click: **"Commit new file"**
+---
+
+### **Step 3: Save**
+
+1. Scroll down
+2. Click **"Commit changes"**
+3. Click **"Commit changes"** again (in the popup)
 
 ---
 
-## STEP 7: Test It (Manual Trigger)
+### **Step 4: Run It!**
 
-1. Click: **"Actions"** tab (top menu)
-2. Click: **"Auto Generate Images"** (left sidebar)
-3. Click: **"Run workflow"** (right side, dropdown button)
-4. Click: **"Run workflow"** (green button)
+1. Go to **Actions** tab
+2. Click **"Auto Generate Images"** (left sidebar)
+3. Click **"Run workflow"** (right side dropdown)
+4. Click green **"Run workflow"** button
+5. Refresh page
 
-**Wait 2-3 minutes** while it runs.
-
----
-
-## STEP 8: Download Your Images
-
-1. **While it's running**, open new tab: https://www.kaggle.com/code
-2. Find notebook named: **"Auto Image Generator"**
-3. Click on it
-4. **Wait for it to finish** (watch the progress)
-5. Go to **"Output"** tab
-6. **Download the ZIP file**
-
-✅ **Done! You have your images!**
+✅ **Should work now!**
 
 ---
 
-## 📝 HOW TO USE DAILY
+## 🎯 What I Fixed
 
-### To generate new images:
+**The problem:** Line 29 had special characters (emoji, fancy quotes) that YAML didn't like
 
-1. Go to your GitHub repository
-2. Click `prompts.txt`
-3. Click pencil icon ✏️ (Edit)
-4. Change prompts:
+**The fix:** 
+- Removed emojis from the echo command
+- Removed quotes from some parameters (they were causing issues)
+- Added proper `name:` fields to each step
+- Clean, simple YAML syntax
+
+---
+
+## 📊 Expected Result
+
+After fixing and running, you should see:
 ```
-a cat sitting on windowsill
-a dog playing in park
-a bird flying in skyY
+✅ Checkout code       (green checkmark)
+✅ Run on Kaggle       (green checkmark)
+✅ Complete            (green checkmark)
