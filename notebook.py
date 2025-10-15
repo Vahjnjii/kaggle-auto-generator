@@ -1,11 +1,20 @@
 # ============================================
-# KAGGLE AUTO-GENERATOR
-# Reads prompts.txt from GitHub
+# KAGGLE AUTO-GENERATOR - PURE PYTHON VERSION
 # ============================================
 
-!pip install diffusers transformers accelerate peft -q
+import subprocess
+import sys
 
-import torch, random, gc, os, zipfile
+# Install packages using subprocess instead of !pip
+print("Installing dependencies...")
+subprocess.check_call([sys.executable, "-m", "pip", "install", 
+                      "diffusers", "transformers", "accelerate", "peft", "-q"])
+
+import torch
+import random
+import gc
+import os
+import zipfile
 from datetime import datetime
 from diffusers import StableDiffusionXLPipeline, EulerDiscreteScheduler
 
@@ -17,7 +26,7 @@ print("=" * 70)
 with open('prompts.txt', 'r') as f:
     PROMPTS_TEXT = f.read()
 
-# Settings (edit these if you want)
+# Settings
 SUB_PROMPT = "highly detailed, 8k, professional photography"
 NEGATIVE_PROMPT = "blurry, low quality, distorted, ugly"
 WIDTH, HEIGHT = 1024, 1024
